@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contact Us - Lecters Discord Services</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/aos.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .contact-container {
+            background: rgba(0, 0, 0, 0.7);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            animation: float 6s ease-in-out infinite;
+            position: relative;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 2.2rem;
+        }
+
+        h2 i {
+            font-size: 2.5rem;
+            color: #7289da;
+        }
+
+        form input, form textarea, form select {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.07);
+            color: white;
+            outline: none;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+
+        form input:focus, form textarea:focus, form select:focus {
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 12px #7289da;
+        }
+
+        form select option {
+            background: #2c2f4a;
+            color: white;
+        }
+
+        .btn {
+            margin-top: 20px;
+            background: linear-gradient(135deg, #7289da, #99aab5);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #99aab5, #7289da);
+            transform: scale(1.05);
+        }
+
+        .success-popup {
+            display: none;
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: #43b581;
+            padding: 20px 30px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            z-index: 999;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+    </style>
+</head>
+<body>
+    <section class="contact" data-aos="fade-up">
+        <div class="contact-container">
+            <h2><i class='bx bxl-discord'></i> Contact Us</h2>
+            <form id="contactForm" method="POST" action="/contact">
+                <input type="text" name="name" placeholder="Your Name" required>
+                <input type="text" name="discord_tag" placeholder="Your Discord Tag (e.g., username#1234)" required>
+                <input type="email" name="email" placeholder="Your Email" required>
+                <select name="service" required>
+                    <option value="" disabled selected>Select a Service</option>
+                    <option value="Discord Server Setup">Discord Server Setup</option>
+                    <option value="Custom Bots">Custom Bots</option>
+                    <option value="Other">Other</option>
+                </select>
+                <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+                <button type="submit" class="btn">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <div class="success-popup" id="successPopup">
+        ✅ Message Sent Successfully!
+    </div>
+
+    <!-- AOS -->
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script>AOS.init();</script>
+
+    <!-- Confetti library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+    <script>
+        const form = document.getElementById('contactForm');
+        const successPopup = document.getElementById('successPopup');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            try {
+                const response = await fetch('/contact', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        // Show success popup
+                        successPopup.style.display = 'block';
+                        setTimeout(() => {
+                            successPopup.style.display = 'none';
+                            form.reset();
+                        }, 3000);
+
+                        // Launch confetti 🎉
+                        confetti({
+                            particleCount: 100,
+                            spread: 70,
+                            origin: { y: 0.6 }
+                        });
+                    } else {
+                        alert('❌ Error sending your message.');
+                    }
+                } else {
+                    alert('❌ Server error.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Could not send your message.');
+            }
+        });
+    </script>
+</body>
+</html>
